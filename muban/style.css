@@ -1,0 +1,85 @@
+*{
+	margin:0;
+	padding: 0;
+	font-style: none;
+	list-style: none;
+}
+a{
+	text-decoration: none;
+}
+html,body,.container{
+	height: 100%;
+
+}
+.container > .head{
+	box-sizing: border-box;
+	height: 10%;
+	width: 100%;
+	background-color: #5b91a2;
+	position: relative;
+}
+
+.container > .head > img{
+	height: 35px;
+	width: 35px;
+	position: absolute;
+	top: 27%;
+	left: 5.5%;
+}
+.container > .head > div{
+	position: absolute;
+	left: 10%;
+	top: 27%;
+	font-size: 1.5em;
+}
+.container > .left{
+
+	background-color: #0f66ab;
+	width: 220px;
+	height: 90%;
+	float:left;
+}
+.container > .left a{
+	color: #ffffff;
+	font-size: 16px;
+}
+.left > ul{
+
+}
+.left > ul > li{
+	text-align: center;
+	line-height: 3em;
+	border-bottom: 1px solid #ededed;
+}
+.left > ul > li.current{
+	background-color: #0dbaf0;
+}
+.left > ul > li.current a{
+	color: #333;
+}
+.left > ul > li a{
+	margin-left: 20px;
+}
+.left > ul > li i{
+	color: #fff;
+}
+.container > .right{
+	box-sizing: border-box;
+	height: 90%;
+	background-color: #ededed;
+	margin-left: 220px;
+	
+}
+.container > .right >.content{
+	border-radius: 5px;
+	background-color: #f5f5f5;
+	height: 100%;
+	padding: 1em;
+	box-sizing: border-box;
+}
+.container > .right > .content > .mb_nav{
+	padding-bottom: 5px;
+	margin-bottom: 10px;
+	border-bottom: 1px solid #ede;
+	line-height: 2em;
+}
