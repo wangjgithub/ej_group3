@@ -76,7 +76,11 @@ html,body,.container{
 	height: 100%;
 	padding: 1em;
 	box-sizing: border-box;
+<<<<<<< HEAD
 	overflow: auto;
+=======
+	
+>>>>>>> a4aa2afe13a66180fa44ae22768476fc8b7ad5f3
 }
 .container > .right > .content > .mb_nav{
 	padding-bottom: 5px;
