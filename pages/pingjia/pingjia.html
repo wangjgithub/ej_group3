@@ -1,8 +1,322 @@
-<style></style>
-<script>
-	
-</script>
+<link rel="stylesheet" href="http://at.alicdn.com/t/font_1395781_wo4pyt1750o.css">
+<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+<style>
+	.pingjia {
+
+	}	
+	a {
+		text-decoration: none;
+		color: #8c8c8c; 
+	}
+	/* 主页/评价列表*/
+	.top {
+		margin-bottom: 20px;
+	}
+	.top > a:first-child {
+		font-weight: 400;
+		font-size: 20px;
+	}
+	.top > span {
+		color: #8c8c8c;
+	}
+	/* 添加、导出、搜索*/
+	.button {
+		position: relative;
+	}
+	.button > a {
+		padding: 0.4em 0.9em;
+
+	}
+	.button a ,.button > .search > input {
+		border: 1px solid #d9d9d9;
+		border-radius: 4px;
+	}
+	.button > .search {
+		right: 0;
+		position: absolute;
+		top: -8px;
+	}
+	.button > .search > input {
+		padding: 0.4em 0.5em;
+		font-size: 16px;
+		color: #bfbfd1;
+	}
+	.button > .search > i {
+		position: absolute;
+		top: 7px;
+		right: 15px;
+		font-size: 16px;
+		color: #a2a2a2;
+	}
+	/* 添加的内容 */
+	form {
+		margin-top: 10px;		
+	}
+	form td {
+		color: #a2a2a2; 
+	}
+	form td > input {
+		border: 1px solid #a2a2a2;
+	}
+	.con {
+		display: none;
+	}
+	/* 表格 */
+	.table {
+		box-sizing: border-box;			
+		width: 100%;
+		border: 1px solid #e8e8e8;
+		margin-top: 30px;
+		/*border-radius: 10px;*/
+		border-collapse: collapse;
+	}
+	.table td{
+		border: 1px solid #e8e8e8;
+		text-align: center;
+		line-height: 2em;
+	}
+	.table .current {
+		background-color: #ededed;
+	}
+	.none {
+		
+	}
+	/* No Data */
+	.box {
+		text-align: center;
+		margin-top: 100px;
+		display: none;
+	}
+	.box span{
+		color: #dedede;
+	}
+	.box > span:first-child{
+		font-size: 50px;
+	}
+	.bottom {
+		text-align: center;
+		margin-top: 100px;
+	}
+</style>
 
 <div class="pingjia">
-	评价管理
+	<!-- 主页/评价列表 -->
+	<div class="top">
+		<a href="javascript:void(0);">主页</a>
+		<span>/</span>
+		<a href="javascript:void(0);">评价列表</a>
+	</div>
+	<!-- 添加、导出、搜索 -->
+	<div class="button">
+		<a href="javascript:void(0);" class="btn_add">添加</a>
+		<a href="javascript:void(0);">导出</a>
+		<!-- 搜索框 -->
+		<div class="search">
+			<input type="text" placeholder="请输入...">
+			<i class="iconfont icon-sousuo"></i>
+		</div>
+	</div>
+	<!-- 添加的内容 -->
+	<form action="javascript:void(0);" class="con">
+		<input type="hidden" name="id">
+		<table>
+			<tbody>
+				<tr>
+					<td>订单编号</td>
+					<td><input type="text" name="orderId"></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td>内容</td>
+					<td><input type="text" name="content"></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td>评论时间</td>
+					<td><input type="text" name="commentTime"></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td><input type="submit" value="保存" class="btn_save"></td>
+				</tr>
+			</tbody>
+		</table>
+	</form>
+	<!-- 表格 -->
+	<table class="table">
+		<thead>
+			<tr>
+				<td width="100px"><input type="checkbox"></td>
+				<td>订单号</td>
+				<td>内容</td>
+				<td>评论时间</td>
+				<td>操作</td>
+			</tr>
+		</thead>
+		<tbody>
+			<tr class="none">
+				<td><input type="checkbox"></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td>
+					<a href="javascript:void(0);" class="btn_del">删除</a>
+					<a href="javascript:void(0);" class="btn_upd">修改</a>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<!-- No Data -->
+	<div class="box">
+		<span class="iconfont icon-hezi"><br></span>
+		<span>No Data</span>
+	</div>
+	<div class="bottom">E洁家政后台管理系统</div>
 </div>
+
+<script>
+	$(function(){
+		// 为主页绑定跳转事件
+		$("div.pingjia").on("click",".top>a",function(event){
+			if($(this).text() === "主页"){
+				$('.top').load('../pages/guke/guke.html');
+			}
+		});
+		var baseURL = "http://134.175.154.93:6677";
+		var tbody = document.getElementsByClassName("table")[0].children[1];
+		var baocun = document.getElementsByClassName("btn_save")[0];
+		// 为添加按钮绑定事件函数
+		$(".btn_add").click(function(){
+			// 让添加按钮下面的输入框出现
+			$("form")[0].className = "";
+			// 清楚输入框中的内容
+			document.querySelector("input[name=orderId]").value = "";
+			document.querySelector("input[name=content]").value = "";
+			document.querySelector("input[name=commentTime]").value = "";
+			initData();
+			var newTr = tbody.firstElementChild.cloneNode(true);
+			// 在tr中添加订单编号、内容、评论时间
+			newTr.children[1].innerText = "67";
+			newTr.children[2].innerText = "55";
+			newTr.children[3].innerText = "99";
+			// 将新产生的tr放入到tbody里
+			tbody.appendChild(newTr);
+			newTr.className = "";
+			
+		});
+		// 为保存按钮绑定事件函数
+		document.forms[0].onsubmit = function(event){
+			var orderId = document.querySelector("input[name=orderId]").value;
+			var content = document.querySelector("input[name=content]").value;
+			var commentTime = document.querySelector("input[name=commentTime]").value;
+			// var id = document.querySelector("input[name=id]").value;
+			// console.log(id);
+			// alert(orderId,content,commentTime);
+			var url = baseURL+"/comment/insertComment";
+			var data;
+			// if(id){
+			// 	 data = "id="+id+"&orderId="+orderId+"&content="+content+"&commentTime="+commentTime;
+			// }else{
+				data = "orderId="+orderId+"&content="+content+"&commentTime="+commentTime;
+			// }
+			$.post(url,data,function(response){
+				alert(response);
+				alert(response.message);
+				initData();
+			});
+		};
+		// 为删除/修改按钮绑定事件函数
+		tbody.onclick = function(event){				
+			if(event.target.nodeName === "A"){
+				switch(event.target.className){
+					case "btn_del":
+						// 获取当前id
+						var id = event.target.parentNode.parentNode.children[0].children[0].value;
+						console.log(id);
+						var url = baseURL+"/comment/deleteCommentById";
+						var data = "id="+id;
+						$.post(url,data,function(response){
+							console.log(response);
+							alert(response.message);
+							initData();
+						});
+						break;
+					case "btn_upd":
+						$("form")[0].className = "";
+						// 1. 将原有的信息放到表单中
+						var id = event.target.parentNode.parentNode.children[0].children[0].value;
+						var orderId = event.target.parentNode.parentNode.children[1].innerText;
+						var content = event.target.parentNode.parentNode.children[2].innerText;
+						var commentTime = event.target.parentNode.parentNode.children[3].innerText;
+						document.querySelector("input[name=orderId]").value = orderId;
+						document.querySelector("input[name=content]").value = content;
+						document.querySelector("input[name=commentTime]").value = commentTime;
+						document.querySelector("input[name=id]").value = id;
+						break;
+				}
+			}
+		};
+		// 为搜索框绑定事件函数
+		$(".search").keydown(function(event){
+			switch(event.keyCode){
+				case 13:
+					var order_id = event.target.value;
+					$(".table tbody tr")
+						.hide()
+						.filter(":contains('"+order_id+"')")
+						.show();		
+			}
+		});
+		// 为搜索图标绑定事件函数
+		$(".search>i").click(function(){
+			var order_id = this.parentNode.children[0].value;
+			$(".table tbody tr")
+				.hide()
+				.filter(":contains('"+order_id+"')")
+				.show();	
+		})
+		// 光标放上去当前行添加背景色
+		$(".table>tbody").mouseover(function(event){
+			var target = event.target;
+			if(target.nodeName == "TD"){
+				target.parentNode.className = "current";
+			}	
+		});
+		// 光标一下来当前行取消背景色
+		$(".table>tbody").mouseout(function(event){
+			var target = event.target;
+			if(target.nodeName == "TD"){
+				target.parentNode.className = "";
+			}	
+		});
+		initData();
+		// 初始化数据
+		function initData(){
+			var url = baseURL+"/comment/queryBasic";
+			$.get(url,function(response){
+				// 先将tbody中的数据清空掉
+				Array.prototype.slice.call(tbody.children,0).forEach(function(item,index){
+					if(index !== 0){
+						tbody.removeChild(item);
+					}
+				});
+				// 遍历结果，渲染数据
+				response.data.forEach(function(item){
+					if(!item){
+						document.getElementsByClassName("box").className = "none";
+					}else{
+						var newTr = tbody.firstElementChild.cloneNode(true);
+						// 在tr中添加订单编号、内容、评论时间
+						newTr.children[1].innerText = item.orderId;
+						newTr.children[2].innerText = item.content;
+						newTr.children[3].innerText = item.commentTime;
+						// 将新产生的tr放入到tbody里
+						tbody.appendChild(newTr);
+						newTr.className = "";
+					}
+					
+				});
+			});
+		}
+	});
+</script>
