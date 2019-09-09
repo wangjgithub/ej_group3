@@ -76,6 +76,7 @@ html,body,.container{
 	height: 100%;
 	padding: 1em;
 	box-sizing: border-box;
+	overflow: auto;
 }
 .container > .right > .content > .mb_nav{
 	padding-bottom: 5px;
