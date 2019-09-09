@@ -1,8 +1,210 @@
-<style></style>
-<script>
-	
-</script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
 
-<div class="分类">
-	分类管理
-</div>
+    <style>
+        .btns{
+                margin-bottom: 10px;
+            }
+            .btn{
+                display: inline-block;
+                padding: .2em .5em;
+                color:#fff;
+                background-color:rgb(12, 87, 46) ;
+                cursor: pointer;
+                border-radius: 3px;
+            }
+            table.table{
+                box-sizing: border-box;
+                width: 100%;
+                border-collapse: collapse;
+            }
+            table.table td,table.table th{
+                border: 1px solid #ccc;
+                line-height: 2em;
+                text-align: center;
+            }
+            .none {
+                display: none;
+            }
+        </style>
+
+
+
+</head>
+<body>
+    <h2>分类管理</h2>
+    <div class="btns">
+        <div class="btn" id="btn_add">添加</div>
+        <div class="btn">批量导入</div>
+        <div class="btn">批量删除</div>
+    </div>
+    
+    <div class="forms">
+        <form action="javascript:void(0)">
+            <input type="hidden" name="id">
+            <table>
+                <tr>
+                    <td>商品名称</td>
+                    <td><input type="text" name="name"></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>商品数量</td>
+                    <td><input type="text" name="num"></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><input type="submit" value="保存"></td>
+                </tr>
+                
+            </table>
+        </form>
+        <form action="javascript:void(0)">
+                <tr>
+                    <td><input type="text" name="find"></td>
+                    <td><input type="submit" value="搜索"></td>
+                </tr>
+        </form>
+    </div>
+    
+    <table class="table">
+        
+        <thead>
+            <tr>
+                <th width="60px">编号</th>
+                <th width="200px">商品名称</th>
+                <th>商品数量</th>
+                <th>父母Id</th>
+                <th width="100px">操作</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr class="none" >
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>
+                    <a class="btn_del" href="javascript:void(0);">删除</a>
+                    <a class="btn_upd" href="javascript:void(0);">修改</a>
+                </td>
+            </tr>
+        </tbody>
+        
+        
+    </table>
+
+
+
+    <script src="./fenlei.js"></script>
+    <script>
+        // 添加
+        var btn_add=document.querySelector("div[id=btn_add]");
+        var tbody =document.getElementsByTagName("tbody")[1];
+        var baseURL="http://134.175.154.93:6677";
+
+
+        document.forms[0].onsubmit = function(event){
+			// 1. 校验有效性
+			// 2. 获取有效值
+			var name = document.querySelector("input[name=name]").value;
+			var num = document.querySelector("input[name=num]").value;
+            var id = document.querySelector("input[name=id]").value;
+
+            var url = baseURL+"/category/insertCategory";
+			var data;
+			if(id){
+                tbody.onclick();
+			} else {
+				data = "name="+name+"&num="+num;
+            }
+            
+            $.post(url,data,function(result){
+				alert(result.message);
+                initData();
+            });
+			// ajax
+			
+
+			event.preventDefault();
+        }
+        
+        // 删除和修改
+		tbody.onclick = function(event){
+			if(event.target.nodeName === "A"){
+				switch(event.target.className){
+					case "btn_del":
+						//0. 获取当前的id
+						var id = event.target.parentNode.parentNode.children[0].innerHTML;
+						var url = baseURL+"/category/deleteByCategoryId";
+						var data = "id="+id;
+						$.post(url,data,function(result){
+							alert(result.message);
+							initData();
+						});
+                    break;
+                    case "btn_upd":
+                        var id = event.target.parentNode.parentNode.children[0].innerHTML;
+                        var url = baseURL+"/category/updateCategory";
+                        var id = event.target.parentNode.parentNode.children[0].innerText;
+                        var name = event.target.parentNode.parentNode.children[1].innerText;
+                        var num = event.target.parentNode.parentNode.children[2].innerText;
+                        document.querySelector("input[name=name]").value = name;
+                        document.querySelector("input[name=num]").value = num;
+                        document.querySelector("input[name=id]").value = id;
+						var data = "id="+id+"&name="+name+"&num="+num;
+						$.post(url,data,function(result){
+                            alert(result.message);
+							initData();
+						});
+
+						break;
+
+                }
+			}
+        }
+        
+        // 根据id查询
+        document.forms[1].onsubmit = function(event){
+            var id = document.querySelector("input[name=find]").value;
+            var url = baseURL+"/category/findByCategoryId?id="+id;
+            $.get(url,function(result){
+				alert(JSON.stringify(result));
+            });
+        }
+
+        initData();
+		// 初始化数据
+		function initData(){
+			// 通过ajax获取后台数据，然后将数据显示到表格中
+			var url = baseURL+"/category/findAllCategory";
+			$.get(url,function(response){
+				// 先将tbody中的数据清空掉
+                Array.prototype.slice.call(tbody.children,0).forEach(function(item,index){
+                    if(index!== 0){
+                        tbody.removeChild(item);
+                    }
+                })
+                // 遍历结果，渲染数据
+                response.data.forEach(function(item){
+                    // 产生一个tr
+                    var newTr = tbody.firstElementChild.cloneNode(true);
+                    newTr.children[0].innerHTML = item.id;
+                    newTr.children[1].innerHTML = item.name;
+                    newTr.children[2].innerHTML =item.num;
+                    newTr.children[3].innerHTML =item.parentId ;
+
+                    newTr.className = "";
+                    tbody.appendChild(newTr);
+                })
+            })
+        }
+    </script>
+</body>
+</html>
